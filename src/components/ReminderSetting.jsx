@@ -2,47 +2,40 @@ import React, { useState } from 'react';
 import './ReminderSetting.css';
 
 function ReminderSetting() {
-  const [measureTimeEnabled, setMeasureTimeEnabled] = useState(false);
-  const [dailyTipEnabled, setDailyTipEnabled] = useState(false);
-  const [lineNotify, setLineNotify] = useState(false);
-  const [surveyNotify, setSurveyNotify] = useState(false);
-  const [measureTime, setMeasureTime] = useState('尚未設定');
-  const [dailyTipTime, setDailyTipTime] = useState('尚未設定');
-
+  const [time1, setTime1] = useState('尚未設定');
+  const [time2, setTime2] = useState('尚未設定');
   const [showModal, setShowModal] = useState(false);
-  const [modalTarget, setModalTarget] = useState('');
+  const [currentTarget, setCurrentTarget] = useState(null);
   const [tempTime, setTempTime] = useState('');
 
+  const [timeToggle1, setTimeToggle1] = useState(false);
+  const [timeToggle2, setTimeToggle2] = useState(false);
+  const [lineNotify, setLineNotify] = useState(false);
+  const [surveyNotify, setSurveyNotify] = useState(false);
+
   const openModal = (target) => {
-    setModalTarget(target);
-    if (target === 'measure') {
-      setTempTime(measureTime.includes(':') ? measureTime : '');
-    } else {
-      setTempTime(dailyTipTime.includes(':') ? dailyTipTime : '');
-    }
+    setCurrentTarget(target);
+    setTempTime(target === 'time1' ? time1 : time2);
     setShowModal(true);
   };
 
   const saveTime = () => {
-    if (modalTarget === 'measure') {
-      setMeasureTime(tempTime || '尚未設定');
-    } else {
-      setDailyTipTime(tempTime || '尚未設定');
-    }
+    if (currentTarget === 'time1') setTime1(tempTime);
+    if (currentTarget === 'time2') setTime2(tempTime);
     setShowModal(false);
   };
 
-  const confirmSettings = () => {
+  const confirm = () => {
     const settings = {
-      measureTimeEnabled,
-      measureTime,
-      dailyTipEnabled,
-      dailyTipTime,
+      measureTimeEnabled: timeToggle1,
+      measureTime: time1,
+      dailyTipEnabled: timeToggle2,
+      dailyTipTime: time2,
       lineNotify,
-      surveyNotify
+      surveyNotify,
     };
-    console.log("提醒設定：", settings);
-    alert("提醒設定已儲存！");
+    console.log('提醒設定：', settings);
+    alert('提醒設定已儲存！');
   };
 
   return (
@@ -52,9 +45,11 @@ function ReminderSetting() {
       <div className="setting-row">
         <label>測量時間提醒設定</label>
         <div className="time-wrapper">
-          <div className="time-display" onClick={() => openModal('measure')}>{measureTime}</div>
+          <div className="time-display" onClick={() => openModal('time1')}>
+            {time1}
+          </div>
           <label className="switch">
-            <input type="checkbox" checked={measureTimeEnabled} onChange={() => setMeasureTimeEnabled(!measureTimeEnabled)} />
+            <input type="checkbox" checked={timeToggle1} onChange={() => setTimeToggle1(!timeToggle1)} />
             <span className="slider"></span>
           </label>
         </div>
@@ -63,9 +58,11 @@ function ReminderSetting() {
       <div className="setting-row">
         <label>每日建議提醒設定</label>
         <div className="time-wrapper">
-          <div className="time-display" onClick={() => openModal('daily')}>{dailyTipTime}</div>
+          <div className="time-display" onClick={() => openModal('time2')}>
+            {time2}
+          </div>
           <label className="switch">
-            <input type="checkbox" checked={dailyTipEnabled} onChange={() => setDailyTipEnabled(!dailyTipEnabled)} />
+            <input type="checkbox" checked={timeToggle2} onChange={() => setTimeToggle2(!timeToggle2)} />
             <span className="slider"></span>
           </label>
         </div>
@@ -87,21 +84,26 @@ function ReminderSetting() {
         </label>
       </div>
 
-      <button onClick={confirmSettings}>確認</button>
+      <button onClick={confirm}>確認</button>
 
+      {/* Modal */}
       {showModal && (
         <>
-          <div className="modal active">
+          <div className="overlay" onClick={() => setShowModal(false)}></div>
+          <div className="modal">
             <div className="modal-content">
               <h2>選擇時間</h2>
-              <input type="time" value={tempTime} onChange={(e) => setTempTime(e.target.value)} />
+              <input
+                type="time"
+                value={tempTime.includes(':') ? tempTime : ''}
+                onChange={(e) => setTempTime(e.target.value)}
+              />
               <div className="modal-buttons">
                 <button onClick={() => setShowModal(false)}>取消</button>
                 <button onClick={saveTime}>儲存</button>
               </div>
             </div>
           </div>
-          <div className="overlay active" onClick={() => setShowModal(false)}></div>
         </>
       )}
     </div>
