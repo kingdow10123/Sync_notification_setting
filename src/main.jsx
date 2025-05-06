@@ -1,14 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ReminderSetting from './components/ReminderSetting.jsx';
+import './components/ReminderSetting.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<ReminderSetting />} />
-      </Routes>
-    </BrowserRouter>
+    <ReminderSetting />
   </React.StrictMode>
 );
